@@ -1,10 +1,48 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useHistory } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 function Signin() {
+  const history = useHistory();
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
   const [showPassword, setShowPassword] = useState(false);
   const showPasswordHandler = () => {
     setShowPassword((prev) => !prev);
+  };
+
+  const signInHandler = async () => {
+    const email = emailInputRef.current.value;
+    const password = passwordInputRef.current.value;
+    try {
+      const response = await fetch(
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCXpSxT1lLXvk05mQjfeftgybpuNLj4618",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+            password,
+            returnSecureToken: true,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        let errorMessage = "";
+        const data = await response.json();
+        if (data && data.error && data.error.message) {
+          errorMessage = data.error.message;
+        }
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      history.replace("/home");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -22,31 +60,47 @@ function Signin() {
             type="email"
             placeholder="email"
             className="m-4 p-2 rounded-2xl bg-slate-300"
+            ref={emailInputRef}
           />
           <input
             type={`${!showPassword ? "password" : "text"}`}
             placeholder="password"
             className="m-4 p-2 rounded-2xl bg-slate-300"
+            ref={passwordInputRef}
           />
 
           <div className="p-4">
             <button
-              className="text-white w-full bg-indigo-950 p-2 rounded-full lg:w-44"
+              className="text-white w-full bg-indigo-950 p-2 rounded-full lg:w-44 mt-3"
+              onClick={signInHandler}
+            >
+              Signin
+            </button>
+            <button
+              className="text-white w-full bg-indigo-950 p-2 rounded-full mt-3 lg:w-44 lg:ml-3"
               onClick={showPasswordHandler}
             >
               {!showPassword ? "Show Password" : "Hide Password"}
             </button>
-            <button className="text-white w-full bg-indigo-950 p-2 rounded-full lg:w-44 mt-3 lg:ml-3">
-              Signin
+
+            <button
+              className="text-white w-full bg-indigo-950 p-2 rounded-full lg:w-44 mt-3"
+              onClick={() => history.replace("/forgotpassword")}
+            >
+              Forgot Password
             </button>
           </div>
         </div>
       </div>
       <div>
-        <button className="text-white rounded-full p-2 m-3 ">
+        <button
+          className="text-white rounded-full p-2 m-3 "
+          onClick={() => history.replace("/signup")}
+        >
           Don't have an account ? Signin
         </button>
       </div>
+      <ToastContainer />
     </div>
   );
 }
