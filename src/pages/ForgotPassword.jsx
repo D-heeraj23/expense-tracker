@@ -1,9 +1,11 @@
 import React from "react";
 import { useRef } from "react";
+import { useHistory } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 
 const ForgotPassword = () => {
   const emailInputRef = useRef();
+  const history = useHistory();
 
   const forgotEmailHandler = async () => {
     try {
@@ -35,7 +37,7 @@ const ForgotPassword = () => {
     }
   };
   return (
-    <div className="w-full h-screen bg-slate-800 text-white flex items-center justify-center">
+    <div className="w-full h-screen bg-slate-800 text-white flex items-center justify-center flex-col">
       <div className="bg-slate-950 p-4 rounded-xl w-[20rem] h-[25rem] flex flex-col justify-between lg:w-1/2">
         <div>
           <h1 className="text-2xl mt-3 mb-3">Forgot Password</h1>
@@ -56,6 +58,12 @@ const ForgotPassword = () => {
         </div>
       </div>
       <ToastContainer />
+      <button
+        className="bg-slate-600 p-3 mt-3 rounded-full"
+        onClick={() => history.replace("/")}
+      >
+        Go to signin page
+      </button>
     </div>
   );
 };

@@ -38,7 +38,7 @@ function Signin() {
       }
 
       const data = await response.json();
-      console.log(data);
+      localStorage.setItem("token", data.idToken);
       history.replace("/home");
     } catch (error) {
       toast.error(error.message);
@@ -85,7 +85,10 @@ function Signin() {
 
             <button
               className="text-white w-full bg-indigo-950 p-2 rounded-full lg:w-44 mt-3"
-              onClick={() => history.replace("/forgotpassword")}
+              onClick={() => {
+                console.log("Navigating to /forgotpassword");
+                history.replace("/forgotpassword");
+              }}
             >
               Forgot Password
             </button>
@@ -97,7 +100,7 @@ function Signin() {
           className="text-white rounded-full p-2 m-3 "
           onClick={() => history.replace("/signup")}
         >
-          Don't have an account ? Signin
+          Don't have an account ? Signup
         </button>
       </div>
       <ToastContainer />

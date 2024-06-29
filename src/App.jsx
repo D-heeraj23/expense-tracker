@@ -7,9 +7,6 @@ function App() {
   return (
     <div>
       <Switch>
-        <Route path={"/"} exact>
-          <Signin />
-        </Route>
         <Route path={"/signup"}>
           <Signup />
         </Route>
@@ -18,6 +15,9 @@ function App() {
         </Route>
         <Route path={"/forgotpassword"}>
           <ForgotPassword />
+        </Route>
+        <Route path={"/"} exact>
+          <Signin />
         </Route>
       </Switch>
     </div>
