@@ -6,6 +6,8 @@ const Home = () => {
   const categoryInputRef = useRef();
   const [expenses, setExpenses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentExpenseId, setCurrentExpenseId] = useState(null);
 
   useEffect(() => {
     const getExpenses = async () => {
@@ -14,7 +16,7 @@ const Home = () => {
           "https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses.json"
         );
         if (!response.ok) {
-          throw new Error("something wrong cant fetch the data");
+          throw new Error("Something went wrong, can't fetch the data");
         }
         const data = await response.json();
         const loadedData = [];
@@ -43,7 +45,7 @@ const Home = () => {
       category: categoryInputRef.current.value,
     };
     try {
-      const res = await fetch(
+      await fetch(
         "https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses.json",
         {
           method: "POST",
@@ -69,10 +71,45 @@ const Home = () => {
       );
 
       if (!response.ok) {
-        throw new Error("cant delete");
+        throw new Error("Can't delete");
       }
     } catch (error) {
       console.log(error.message);
+    }
+  };
+
+  const editHandler = async (id) => {
+    setEditMode(true);
+    setCurrentExpenseId(id);
+    const expenseToEdit = expenses.find((expense) => expense.id === id);
+    numberInputRef.current.value = expenseToEdit.price;
+    desInputRef.current.value = expenseToEdit.description;
+    categoryInputRef.current.value = expenseToEdit.category;
+  };
+
+  const updateHandler = async () => {
+    setIsLoading(true);
+    const updatedData = {
+      price: numberInputRef.current.value,
+      description: desInputRef.current.value,
+      category: categoryInputRef.current.value,
+    };
+    try {
+      await fetch(
+        `https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses/${currentExpenseId}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify(updatedData),
+        }
+      );
+      setEditMode(false);
+      setCurrentExpenseId(null);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      numberInputRef.current.value = "";
+      desInputRef.current.value = "";
+      setIsLoading(false);
     }
   };
 
@@ -100,15 +137,22 @@ const Home = () => {
         <div className="flex items-end h-24 lg:justify-end">
           <button
             className="bg-indigo-800 p-3 w-full text-blue-50 rounded-xl lg:w-48"
-            onClick={addHandler}
+            onClick={editMode ? updateHandler : addHandler}
           >
-            {isLoading ? <p>ADDING...</p> : <p>ADD</p>}
+            {isLoading ? (
+              <p>{editMode ? "UPDATING..." : "ADDING..."}</p>
+            ) : (
+              <p>{editMode ? "UPDATE" : "ADD"}</p>
+            )}
           </button>
         </div>
       </div>
       <div className="space-y-2 mt-3">
         {expenses.map((expense) => (
-          <div className="flex items-center bg-indigo-950 w-[15rem] rounded-xl p-3 justify-around text-white lg:w-[48rem]">
+          <div
+            key={expense.id}
+            className="flex items-center bg-indigo-950 w-[15rem] rounded-xl p-3 justify-around text-white lg:w-[48rem]"
+          >
             <div className="flex flex-col lg:flex-row lg:gap-28">
               <div className="text-xl font-bold">${expense.price}</div>
               <div className="w-[7rem]  text-blue-200 lg:w-[20rem] lg:flex lg:flex-start">
@@ -123,7 +167,10 @@ const Home = () => {
               >
                 Delete
               </button>
-              <button className="bg-blue-950 p-1 rounded-lg w-[4rem]">
+              <button
+                className="bg-blue-950 p-1 rounded-lg w-[4rem]"
+                onClick={() => editHandler(expense.id)}
+              >
                 Edit
               </button>
             </div>
