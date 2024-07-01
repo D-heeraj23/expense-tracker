@@ -1,17 +1,62 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const Home = () => {
   const numberInputRef = useRef();
   const desInputRef = useRef();
   const categoryInputRef = useRef();
   const [expenses, setExpenses] = useState([]);
-  const addHandler = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const getExpenses = async () => {
+      try {
+        const response = await fetch(
+          "https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses.json"
+        );
+        if (!response.ok) {
+          throw new Error("something wrong cant fetch the data");
+        }
+        const data = await response.json();
+        const loadedData = [];
+        for (const keys in data) {
+          loadedData.push({
+            id: keys,
+            price: data[keys].price,
+            description: data[keys].description,
+            category: data[keys].category,
+          });
+        }
+
+        setExpenses(loadedData);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    getExpenses();
+  }, [expenses]);
+
+  const addHandler = async () => {
+    setIsLoading(true);
     const data = {
       price: numberInputRef.current.value,
       description: desInputRef.current.value,
       category: categoryInputRef.current.value,
     };
-    setExpenses((prev) => [...prev, data]);
+    try {
+      const res = await fetch(
+        "https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses.json",
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      numberInputRef.current.value = "";
+      desInputRef.current.value = "";
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -40,31 +85,31 @@ const Home = () => {
             className="bg-indigo-800 p-3 w-full text-blue-50 rounded-xl lg:w-48"
             onClick={addHandler}
           >
-            Add
+            {isLoading ? <p>ADDING...</p> : <p>ADD</p>}
           </button>
         </div>
       </div>
-      {expenses.map((expense) => (
-        <div className="bg-blue-300 w-1/2 rounded-xl p-3 flex items-center justify-around">
-          {
-            <h1 className="font-bold text-xl border-b-4 w-44 ">
-              ${expense.price}
-            </h1>
-          }
-          <div className=" flex gap-5">
-            <div>
-              <p className="font-bold w-60 ">{expense.description} </p>
+      <div className="space-y-2 mt-3">
+        {expenses.map((expense) => (
+          <div className="flex items-center bg-indigo-950 w-[15rem] rounded-xl p-3 justify-around text-white lg:w-[48rem]">
+            <div className="flex flex-col lg:flex-row lg:gap-28">
+              <div className="text-xl font-bold">${expense.price}</div>
+              <div className="w-[7rem]  text-blue-200 lg:w-[20rem] lg:flex lg:flex-start">
+                {expense.description}
+              </div>
+              <div className="border-b lg:border-none">{expense.category}</div>
             </div>
-            <div className="font-bold w-60">{expense.category}</div>
+            <div className="flex flex-col items-center">
+              <button className="bg-red-500 p-1 rounded-lg w-[4rem]">
+                Delete
+              </button>
+              <button className="bg-blue-950 p-1 rounded-lg w-[4rem]">
+                Edit
+              </button>
+            </div>
           </div>
-
-          <div>
-            <button className="bg-red-600 p-2 rounded-md text-white font-bold">
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
