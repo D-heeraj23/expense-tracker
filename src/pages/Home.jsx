@@ -59,6 +59,23 @@ const Home = () => {
     }
   };
 
+  const deleteHandler = async (id) => {
+    try {
+      const response = await fetch(
+        `https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses/${id}.json`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("cant delete");
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div className="bg-slate-600 p-5 text-center w-full h-screen text-black flex flex-col items-center lg:flex ">
       <div className="flex flex-col bg-slate-800 p-4 h-72 rounded-xl lg:w-1/2">
@@ -100,7 +117,10 @@ const Home = () => {
               <div className="border-b lg:border-none">{expense.category}</div>
             </div>
             <div className="flex flex-col items-center">
-              <button className="bg-red-500 p-1 rounded-lg w-[4rem]">
+              <button
+                className="bg-red-500 p-1 rounded-lg w-[4rem]"
+                onClick={() => deleteHandler(expense.id)}
+              >
                 Delete
               </button>
               <button className="bg-blue-950 p-1 rounded-lg w-[4rem]">
