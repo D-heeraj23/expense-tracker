@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 const Home = () => {
   const numberInputRef = useRef();
@@ -38,6 +39,17 @@ const Home = () => {
   }, [expenses]);
 
   const addHandler = async () => {
+    if (
+      numberInputRef.current.value.length === 0 ||
+      desInputRef.current.value.length === 0
+    ) {
+      toast.error("input can not be empty");
+      return;
+    }
+    if (numberInputRef.current.value <= 0) {
+      toast.error("price can not be less than 0");
+      return;
+    }
     setIsLoading(true);
     const data = {
       price: numberInputRef.current.value,
@@ -177,6 +189,7 @@ const Home = () => {
           </div>
         ))}
       </div>
+      <ToastContainer />
     </div>
   );
 };
