@@ -2,9 +2,12 @@ import React from "react";
 import { useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { authActions } from "../store";
 
 function Signin() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const [showPassword, setShowPassword] = useState(false);
@@ -39,6 +42,7 @@ function Signin() {
 
       const data = await response.json();
       localStorage.setItem("token", data.idToken);
+      dispatch(authActions.login());
       history.replace("/home");
     } catch (error) {
       toast.error(error.message);
