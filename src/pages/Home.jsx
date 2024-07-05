@@ -26,6 +26,7 @@ const Home = () => {
         }
         const data = await response.json();
         const loadedData = [];
+        let total = 0;
         for (const keys in data) {
           loadedData.push({
             id: keys,
@@ -33,8 +34,12 @@ const Home = () => {
             description: data[keys].description,
             category: data[keys].category,
           });
+          total = total + parseInt(data[keys].price);
         }
+        console.log(total, "this is total form use effect");
+
         dispatch(expenseReducerAction.setExpense(loadedData));
+        dispatch(expenseReducerAction.setTotalAmount(total));
       } catch (error) {
         console.log(error.message);
       }
@@ -78,7 +83,6 @@ const Home = () => {
   };
 
   const deleteHandler = async (id) => {
-    setIsLoading(true);
     try {
       const response = await fetch(
         `https://expense-tracker-95b39-default-rtdb.firebaseio.com/${cleanEmail}/${id}.json`,
@@ -92,8 +96,6 @@ const Home = () => {
       }
     } catch (error) {
       console.log(error.message);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -184,7 +186,7 @@ const Home = () => {
                 className="bg-red-500 p-1 rounded-lg w-[4rem]"
                 onClick={() => deleteHandler(expense.id)}
               >
-                {isLoading ? "Deleting.." : "Delete"}
+                Delete
               </button>
               <button
                 className="bg-blue-950 p-1 rounded-lg w-[4rem]"
