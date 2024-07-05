@@ -42,6 +42,7 @@ function Signin() {
 
       const data = await response.json();
       localStorage.setItem("token", data.idToken);
+      localStorage.setItem("email", emailInputRef.current.value);
       dispatch(authActions.login());
       history.replace("/home");
     } catch (error) {

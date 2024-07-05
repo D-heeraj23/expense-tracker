@@ -12,12 +12,14 @@ const Home = () => {
   const [editMode, setEditMode] = useState(false);
   const [currentExpenseId, setCurrentExpenseId] = useState(null);
   const expenseData = useSelector((state) => state.expenseReducer.expenseData);
+  const email = localStorage.getItem("email");
+  const cleanEmail = email.replace(/[@.]/g, "");
 
   useEffect(() => {
     const getExpenses = async () => {
       try {
         const response = await fetch(
-          "https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses.json"
+          `https://expense-tracker-95b39-default-rtdb.firebaseio.com/${cleanEmail}.json`
         );
         if (!response.ok) {
           throw new Error("Something went wrong, can't fetch the data");
@@ -60,7 +62,7 @@ const Home = () => {
     };
     try {
       await fetch(
-        "https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses.json",
+        `https://expense-tracker-95b39-default-rtdb.firebaseio.com/${cleanEmail}.json`,
         {
           method: "POST",
           body: JSON.stringify(data),
@@ -79,7 +81,7 @@ const Home = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses/${id}.json`,
+        `https://expense-tracker-95b39-default-rtdb.firebaseio.com/${cleanEmail}/${id}.json`,
         {
           method: "DELETE",
         }
@@ -113,7 +115,7 @@ const Home = () => {
     };
     try {
       await fetch(
-        `https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses/${currentExpenseId}.json`,
+        `https://expense-tracker-95b39-default-rtdb.firebaseio.com/${cleanEmail}/${currentExpenseId}.json`,
         {
           method: "PUT",
           body: JSON.stringify(updatedData),

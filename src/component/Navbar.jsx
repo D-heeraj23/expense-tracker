@@ -7,6 +7,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const email = localStorage.getItem("email");
   const logoutHandler = () => {
     dispatch(authActions.logout());
     localStorage.clear();
@@ -17,7 +18,12 @@ const Navbar = () => {
       <div className="p-2 text-2xl font-semibold m-3 text-white">
         Expense Tracker
       </div>
-      <div className="p-2 m-3 mr-10">
+      <div className="p-2 m-3 mr-10 flex items-center gap-8 text-slate-400">
+        {isLoggedIn && (
+          <div>
+            Welcome : <span className="font-bold text-lg">{email}</span>
+          </div>
+        )}
         {isLoggedIn && (
           <button
             className="bg-blue-900 p-3 w-28 rounded text-white font-semibold text-lg"
