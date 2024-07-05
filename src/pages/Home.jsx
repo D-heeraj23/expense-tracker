@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { expenseReducerAction } from "../store/index";
 
 const Home = () => {
   const numberInputRef = useRef();
   const desInputRef = useRef();
   const categoryInputRef = useRef();
-  const [expenses, setExpenses] = useState([]);
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentExpenseId, setCurrentExpenseId] = useState(null);
+  const expenseData = useSelector((state) => state.expenseReducer.expenseData);
 
   useEffect(() => {
     const getExpenses = async () => {
@@ -29,14 +32,13 @@ const Home = () => {
             category: data[keys].category,
           });
         }
-
-        setExpenses(loadedData);
+        dispatch(expenseReducerAction.setExpense(loadedData));
       } catch (error) {
         console.log(error.message);
       }
     };
     getExpenses();
-  }, [expenses]);
+  }, [expenseData]);
 
   const addHandler = async () => {
     if (
@@ -93,7 +95,7 @@ const Home = () => {
   const editHandler = async (id) => {
     setEditMode(true);
     setCurrentExpenseId(id);
-    const expenseToEdit = expenses.find((expense) => expense.id === id);
+    const expenseToEdit = expenseData.find((expense) => expense.id === id);
     numberInputRef.current.value = expenseToEdit.price;
     desInputRef.current.value = expenseToEdit.description;
     categoryInputRef.current.value = expenseToEdit.category;
@@ -160,7 +162,7 @@ const Home = () => {
         </div>
       </div>
       <div className="space-y-2 mt-3">
-        {expenses.map((expense) => (
+        {expenseData.map((expense) => (
           <div
             key={expense.id}
             className="flex items-center bg-indigo-950 w-[15rem] rounded-xl p-3 justify-around text-white lg:w-[48rem]"

@@ -15,9 +15,23 @@ const auth = createSlice({
   },
 });
 
+const expenseSlice = createSlice({
+  name: "expenseReducer",
+  initialState: { expenseData: [], totalAmount: 0 },
+  reducers: {
+    setExpense(state, action) {
+      state.expenseData = action.payload;
+    },
+    setTotalAmount(state, action) {
+      state.totalAmount = action.payload;
+    },
+  },
+});
+
 const store = configureStore({
-  reducer: { auth: auth.reducer },
+  reducer: { auth: auth.reducer, expenseReducer: expenseSlice.reducer },
 });
 
 export const authActions = auth.actions;
+export const expenseReducerAction = expenseSlice.actions;
 export default store;

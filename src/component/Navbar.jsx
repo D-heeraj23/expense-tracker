@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 
 const Navbar = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const logoutHandler = () => {
     dispatch(authActions.logout());
