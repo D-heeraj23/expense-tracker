@@ -76,6 +76,7 @@ const Home = () => {
   };
 
   const deleteHandler = async (id) => {
+    setIsLoading(true);
     try {
       const response = await fetch(
         `https://expense-tracker-95b39-default-rtdb.firebaseio.com/expenses/${id}.json`,
@@ -89,6 +90,8 @@ const Home = () => {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -179,7 +182,7 @@ const Home = () => {
                 className="bg-red-500 p-1 rounded-lg w-[4rem]"
                 onClick={() => deleteHandler(expense.id)}
               >
-                Delete
+                {isLoading ? "Deleting.." : "Delete"}
               </button>
               <button
                 className="bg-blue-950 p-1 rounded-lg w-[4rem]"
