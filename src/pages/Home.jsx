@@ -14,6 +14,7 @@ const Home = () => {
   const expenseData = useSelector((state) => state.expenseReducer.expenseData);
   const email = localStorage.getItem("email");
   const cleanEmail = email.replace(/[@.]/g, "");
+  const themeIsWhite = useSelector((state) => state.theme.whiteTheme);
 
   useEffect(() => {
     const getExpenses = async () => {
@@ -135,7 +136,11 @@ const Home = () => {
   };
 
   return (
-    <div className="bg-slate-600 p-5 text-center w-full h-screen text-black flex flex-col items-center lg:flex ">
+    <div
+      className={`${
+        themeIsWhite ? "bg-white" : "bg-slate-600"
+      } p-5 text-center w-full h-screen text-black flex flex-col items-center lg:flex`}
+    >
       <div className="flex flex-col bg-slate-800 p-4 h-72 rounded-xl lg:w-1/2">
         <input
           type="number"
